@@ -15,12 +15,12 @@ public static String longestUniqueSubstring(String s)
 ## Примери
 | Извикване	| Резултат |
 |----------|----------|
-| longestUniqueSubstring("abcabcbb") | "abc" |
-| longestUniqueSubstring("bbbbb") | "b" |
-| longestUniqueSubstring("pwwkew") | "wke" |
-| longestUniqueSubstring("abcdefg") | "abcdefg" |
-| longestUniqueSubstring("x") | "x" |
-| longestUniqueSubstring("") | "" |
+| ```longestUniqueSubstring("abcabcbb")``` | ```"abc"``` |
+| ```longestUniqueSubstring("bbbbb")``` | ```"b"``` |
+| ```longestUniqueSubstring("pwwkew")``` | ```"wke"``` |
+| ```longestUniqueSubstring("abcdefg")``` | ```"abcdefg"``` |
+| ```longestUniqueSubstring("x")``` | ```"x"``` |
+| ```longestUniqueSubstring("")``` | ```""``` |
 
 ## ⚠️ Забележки
 * Помисли каква е сложността на алгоритъма и дали може да я оптимизираш
