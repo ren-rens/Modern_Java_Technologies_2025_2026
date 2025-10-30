@@ -32,24 +32,10 @@ public final class ComputerScienceSemesterPlanner extends AbstractSemesterPlanne
         int minimalAmountOfCredits = semesterPlan.minimalAmountOfCredits();
         UniversitySubject[] currentSubjects = new UniversitySubject[semesterPlan.subjects().length];
 
-        int idx = 0;
-        int currCredits = 0;
+        int size = coverSubjects(minimalAmountOfCredits, subjects, currentSubjects); // the referance is copied but the value is changed and we need the number of covered subjects so we return it
 
-        for (UniversitySubject sub : subjects) {
-            if (currCredits >= minimalAmountOfCredits) {
-                break;
-            }
-
-            currCredits += sub.credits();
-            currentSubjects[idx++] = sub;
-        }
-
-        if (currCredits < minimalAmountOfCredits) {
-            throw new CryToStudentsDepartmentException("Computer science student cannot cover their semester credits!");
-        }
-
-        UniversitySubject[] res = new UniversitySubject[idx];
-        System.arraycopy(currentSubjects, 0, res, 0, idx);
+        UniversitySubject[] res = new UniversitySubject[size];
+        System.arraycopy(currentSubjects, 0, res, 0, size);
 
         return res;
     }
@@ -77,5 +63,25 @@ public final class ComputerScienceSemesterPlanner extends AbstractSemesterPlanne
                 break;
             }
         }
+    }
+
+    private int coverSubjects(int minimalAmountOfCredits, UniversitySubject[] subjects, UniversitySubject[] currentSubjects) throws CryToStudentsDepartmentException{
+        int idx = 0;
+        int currCredits = 0;
+
+        for (UniversitySubject sub : subjects) {
+            if (currCredits >= minimalAmountOfCredits) {
+                break;
+            }
+
+            currCredits += sub.credits();
+            currentSubjects[idx++] = sub;
+        }
+
+        if (currCredits < minimalAmountOfCredits) {
+            throw new CryToStudentsDepartmentException("Computer science student cannot cover their semester credits!");
+        }
+
+        return idx;
     }
 }
