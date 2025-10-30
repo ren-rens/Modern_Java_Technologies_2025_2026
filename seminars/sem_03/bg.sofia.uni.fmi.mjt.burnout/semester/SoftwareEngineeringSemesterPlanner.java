@@ -24,83 +24,16 @@ public final class SoftwareEngineeringSemesterPlanner extends AbstractSemesterPl
 
         sortForSE(subjects);
 
-        SubjectRequirement[] req = semesterPlan.subjectRequirements();
-        if (req == null || req.length > Category.values().length) {
+        if (semesterPlan.subjectRequirements() == null || semesterPlan.subjectRequirements().length > Category.values().length) {
             throw new InvalidSubjectRequirementsException("The subjectRequirements is null or contain duplicate categories");
         }
 
-        int minimalAmountOfCredits = semesterPlan.minimalAmountOfCredits();
-        int currentCredits = 0;
-        int[] coveredSubjectsCredits = new int[req.length];
-        boolean subjectsCreditsAreCovered = false;
 
         UniversitySubject[] currentSubjects = new UniversitySubject[semesterPlan.subjects().length];
-        int idx = 0;
+        int size = coverSubjects(subjects, semesterPlan, currentSubjects);
 
-        for (UniversitySubject sub : subjects) {
-            if (currentCredits >= minimalAmountOfCredits && subjectsCreditsAreCovered) {
-                break;
-            }
-
-            for (SubjectRequirement r : req) {
-                if (r.category().equals(sub.category())) {
-                    // same category
-                    int coveredSubjectsCredit = coveredSubjectsCredits[r.category().getIdx()];
-                    int minAmountEnrolled = r.minAmountEnrolled();
-
-                    if (minAmountEnrolled <= coveredSubjectsCredit) {
-                        break;
-                    }
-
-                    coveredSubjectsCredit += minAmountEnrolled;
-                    coveredSubjectsCredits[r.category().getIdx()] = coveredSubjectsCredit;
-                    currentSubjects[idx++] = sub;
-
-                    currentCredits += sub.credits();
-                }
-            }
-
-            subjectsCreditsAreCovered = true;
-            for (int coveredSubjectsCredit : coveredSubjectsCredits) {
-                if (coveredSubjectsCredit == 0) {
-                    subjectsCreditsAreCovered = false;
-                    break;
-                }
-            }
-        }
-
-        if (currentCredits < minimalAmountOfCredits) {
-            // should pass by all subjects again and sign more
-            sortByCredits(subjects, 0, subjects.length);
-
-            for (UniversitySubject sub : subjects) {
-                if (currentCredits >= minimalAmountOfCredits) {
-                    break;
-                }
-
-                boolean inResult = false;
-                for (UniversitySubject subject : currentSubjects) {
-                    if (sub == subject) {
-                        inResult = true;
-                        break;
-                    }
-                }
-
-                if (inResult) {
-                    continue;
-                }
-
-                currentCredits += sub.credits();
-                currentSubjects[idx++] = sub;
-            }
-        }
-
-        if (!subjectsCreditsAreCovered || currentCredits < minimalAmountOfCredits) {
-            throw new CryToStudentsDepartmentException("Software engineering student cannot cover their semester credits!");
-        }
-
-        UniversitySubject[] res = new UniversitySubject[idx];
-        System.arraycopy(currentSubjects, 0, res, 0, idx);
+        UniversitySubject[] res = new UniversitySubject[size];
+        System.arraycopy(currentSubjects, 0, res, 0, size);
 
         return res;
         //return currentSubjects;
@@ -183,5 +116,80 @@ public final class SoftwareEngineeringSemesterPlanner extends AbstractSemesterPl
                 break;
             }
         }
+    }
+
+    private int coverSubjects(UniversitySubject[] subjects, SemesterPlan semesterPlan, UniversitySubject[] currentSubjects) throws CryToStudentsDepartmentException {
+        SubjectRequirement[] req = semesterPlan.subjectRequirements();
+
+        int minimalAmountOfCredits = semesterPlan.minimalAmountOfCredits();
+        int currentCredits = 0;
+        int[] coveredSubjectsCredits = new int[req.length];
+        boolean subjectsCreditsAreCovered = false;
+
+        int idx = 0;
+
+        for (UniversitySubject sub : subjects) {
+            if (currentCredits >= minimalAmountOfCredits && subjectsCreditsAreCovered) {
+                break;
+            }
+
+            for (SubjectRequirement r : req) {
+                if (r.category().equals(sub.category())) {
+                    // same category
+                    int coveredSubjectsCredit = coveredSubjectsCredits[r.category().getIdx()];
+                    int minAmountEnrolled = r.minAmountEnrolled();
+
+                    if (minAmountEnrolled <= coveredSubjectsCredit) {
+                        break;
+                    }
+
+                    coveredSubjectsCredit += minAmountEnrolled;
+                    coveredSubjectsCredits[r.category().getIdx()] = coveredSubjectsCredit;
+                    currentSubjects[idx++] = sub;
+
+                    currentCredits += sub.credits();
+                }
+            }
+
+            subjectsCreditsAreCovered = true;
+            for (int coveredSubjectsCredit : coveredSubjectsCredits) {
+                if (coveredSubjectsCredit == 0) {
+                    subjectsCreditsAreCovered = false;
+                    break;
+                }
+            }
+        }
+
+        if (currentCredits < minimalAmountOfCredits) {
+            // should pass by all subjects again and sign more
+            sortByCredits(subjects, 0, subjects.length);
+
+            for (UniversitySubject sub : subjects) {
+                if (currentCredits >= minimalAmountOfCredits) {
+                    break;
+                }
+
+                boolean inResult = false;
+                for (UniversitySubject subject : currentSubjects) {
+                    if (sub == subject) {
+                        inResult = true;
+                        break;
+                    }
+                }
+
+                if (inResult) {
+                    continue;
+                }
+
+                currentCredits += sub.credits();
+                currentSubjects[idx++] = sub;
+            }
+        }
+
+        if (!subjectsCreditsAreCovered || currentCredits < minimalAmountOfCredits) {
+            throw new CryToStudentsDepartmentException("Software engineering student cannot cover their semester credits!");
+        }
+
+        return idx;
     }
 }
