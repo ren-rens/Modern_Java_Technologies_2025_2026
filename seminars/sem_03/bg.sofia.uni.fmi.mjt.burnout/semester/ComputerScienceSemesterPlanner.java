@@ -6,11 +6,6 @@ import bg.sofia.uni.fmi.mjt.burnout.plan.SemesterPlan;
 import bg.sofia.uni.fmi.mjt.burnout.subject.UniversitySubject;
 
 public final class ComputerScienceSemesterPlanner extends AbstractSemesterPlanner{
-    /*
-    да се запишат предметите с по-добри отзиви от други състуденти,
-    без да се гледат нужния брой предмети по категорията им.
-    */
-
     @Override
     public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) throws IllegalArgumentException, DisappointmentException {
         return super.calculateJarCount(subjects, maximumSlackTime, semesterDuration);
