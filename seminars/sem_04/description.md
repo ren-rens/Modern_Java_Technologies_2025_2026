@@ -234,7 +234,7 @@ for (Workout w : plan) {
 // StrengthWorkout[name=Leg Day, duration=30, caloriesBurned=250, difficulty=2]
 ```
 
-> Warning
+> [!WARNING]
 > Планът е сортиран по изгорени калории, след това по трудност — и двете в низходящ ред.
 
 ## Пакети
