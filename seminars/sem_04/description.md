@@ -232,9 +232,9 @@ for (Workout w : plan) {
 // CardioWorkout[name=Cycling, duration=60, caloriesBurned=600, difficulty=5]
 // CardioWorkout[name=HIIT, duration=30, caloriesBurned=400, difficulty=4]
 // StrengthWorkout[name=Leg Day, duration=30, caloriesBurned=250, difficulty=2]
-Warning
 ```
 
+> Warning
 > Планът е сортиран по изгорени калории, след това по трудност — и двете в низходящ ред.
 
 ## Пакети
@@ -262,7 +262,8 @@ src
     └── (...)
 ```
 
-> <span style="color:red; font-weight:bold;">⚠️ Warning</span>  
-> <span style="color:black;">Не променяйте по никакъв начин интерфейсите, дадени в условието.</span><br>
-> <span style="color:black;">Използването на <b>Java Stream API</b> и/или <b>lambdas</b> не е разрешено.</span><br>
-> <span style="color:black;">Задачата трябва да се реши <b>с помощта на знанията от курса до момента</b>.</span>
+> ⚠️ **Warning**
+>
+> **Не променяйте по никакъв начин интерфейсите, дадени в условието.**  
+> Използването на **Java Stream API** и/или **lambdas** **не е разрешено**.  
+> Задачата трябва да се реши **с помощта на знанията от курса до момента**.
