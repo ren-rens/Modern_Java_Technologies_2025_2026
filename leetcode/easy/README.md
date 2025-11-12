@@ -8,3 +8,5 @@
 [28. Find The Index Of The First Occurrence In A String](https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/)
 
 [58. Length Of Last Word](https://leetcode.com/problems/length-of-last-word/)
+
+[66. Plus One](https://leetcode.com/problems/plus-one/description/)
