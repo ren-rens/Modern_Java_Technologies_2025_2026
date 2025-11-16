@@ -2,8 +2,10 @@ package bg.sofia.uni.fmi.mjt.show.ergenka;
 
 import bg.sofia.uni.fmi.mjt.show.date.DateEvent;
 
-public class RomanticErgenka implements Ergenka{
-    public RomanticErgenka(String name, short age, int romanceLevel, int humorLevel, int rating, String favoriteDateLocation) {
+public class RomanticErgenka implements Ergenka {
+
+    public RomanticErgenka(String name, short age, int romanceLevel, int humorLevel, int rating,
+                           String favoriteDateLocation) {
         this.name = name;
         this.age = age;
         this.romanceLevel = romanceLevel;
@@ -39,6 +41,10 @@ public class RomanticErgenka implements Ergenka{
 
     @Override
     public void reactToDate(DateEvent dateEvent) {
+        if (dateEvent == null) {
+            return;
+        }
+
         int bonuses = 0;
         /*
         +5 точки, ако локацията на срещата е любима на участника (case insensitive)
@@ -47,7 +53,8 @@ public class RomanticErgenka implements Ergenka{
          */
 
         String location = dateEvent.getLocation();
-        if (location.equals(this.favoriteDateLocation)) {
+        if (location != null && this.favoriteDateLocation != null &&
+            location.equalsIgnoreCase(this.favoriteDateLocation)) {
             bonuses += 5;
         }
 
@@ -55,13 +62,22 @@ public class RomanticErgenka implements Ergenka{
         if (duration < 30) {
             bonuses -= 3;
         }
-        if (duration > 120) {
+        else if (duration > 120) {
             bonuses -= 2;
         }
 
         int dateTension = dateEvent.getTensionLevel();
 
-        this.rating = (this.romanceLevel * 7) / dateTension  + (int)(this.humorLevel / 3) + bonuses;
+        int ratingChange;
+        if (dateTension == 0) {
+            return;
+            //ratingChange = 0;  // not sure
+        } else {
+            ratingChange = (this.romanceLevel * 7) / dateTension +
+                Math.floorDiv(this.humorLevel, 3) + bonuses;
+        }
+
+        this.rating += ratingChange;
     }
 
     private String name;
@@ -70,4 +86,5 @@ public class RomanticErgenka implements Ergenka{
     private int humorLevel;
     private int rating;
     private String favoriteDateLocation;
+
 }
