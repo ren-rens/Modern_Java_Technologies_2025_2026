@@ -2,48 +2,93 @@ package bg.sofia.uni.fmi.mjt.show.elimination;
 
 import bg.sofia.uni.fmi.mjt.show.ergenka.Ergenka;
 
-public class LowestRatingEliminationRule implements EliminationRule{
+public class LowestRatingEliminationRule implements EliminationRule {
+
     public LowestRatingEliminationRule() {
     }
 
     @Override
     public Ergenka[] eliminateErgenkas(Ergenka[] ergenkas) {
-        int minRating = Integer.MAX_VALUE;
-        int size = ergenkas.length;
-
-        int[] ergenkaIndex = new int[size];
-        for (int j = 0; j < size; j++) {
-            ergenkaIndex[j] = -1;
+        if (ergenkas == null || ergenkas.length == 0) {
+            return new Ergenka[0];
         }
 
+        int nonNullCount = notNullElements(ergenkas);
+        if (nonNullCount == 0) {
+            return new Ergenka[0];
+        }
+
+        // Find lowest rating
+        int lowestRating = findLowestRating(ergenkas);
+
+        // Count how many will REMAIN (those NOT having lowest rating)
+        int remainingCount = findRemaningErgenkasCount(ergenkas, lowestRating);
+        if (remainingCount == 0) {
+            return new Ergenka[0];
+        }
+
+        // Build array of REMAINING ergenkas
+        return  findRemaningErgenkas(ergenkas, lowestRating, remainingCount, ergenkas.length - nonNullCount);
+    }
+
+    private int notNullElements(Ergenka[] ergenkas) {
+        int nonNullCount = 0;
+        for (Ergenka ergenka : ergenkas) {
+            if (ergenka != null) {
+                nonNullCount++;
+            }
+        }
+
+        return nonNullCount;
+    }
+
+    private int findLowestRating(Ergenka[] ergenkas) {
+        int minRating = Integer.MAX_VALUE;
+
+        for (Ergenka ergenka : ergenkas) {
+            if (ergenka == null) {
+                continue;
+            }
+
+            int rating = ergenka.getRating();
+            if (rating < minRating) {
+                minRating = rating;
+            }
+        }
+
+        return minRating;
+    }
+
+    private int findRemaningErgenkasCount(Ergenka[] ergenkas, int lowestRating) {
+        int remainingCount = 0;
+        for (Ergenka ergenka : ergenkas) {
+            if (ergenka == null) {
+                continue;
+            }
+
+            if (ergenka.getRating() != lowestRating) {
+                remainingCount++;
+            }
+        }
+
+        return remainingCount;
+    }
+
+    private Ergenka[] findRemaningErgenkas(Ergenka[] ergenkas, int lowestRating, int remainingCount, int nullCount) {
+        Ergenka[] remaining = new Ergenka[remainingCount + nullCount];
         int idx = 0;
 
-        for (int i = 0; i < size; i++) {
-            int currRating = ergenkas[i].getRating();
-            if (currRating < minRating) {
-                minRating = currRating;
-                for (int j = 0; j < idx; j++) {
-                    ergenkaIndex[j] = -1;
-                }
-
-                idx = 0;
-                ergenkaIndex[idx++] = i;
+        for (Ergenka ergenka : ergenkas) {
+            if (ergenka == null) {
+                remaining[idx++] = null;
+                continue;
             }
-            else if (currRating == minRating) {
-                ergenkaIndex[idx++] = i;
+
+            if (ergenka.getRating() != lowestRating) {
+                remaining[idx++] = ergenka;
             }
         }
 
-        Ergenka[] eliminateErgenkas = new Ergenka[idx];
-        idx = 0;
-
-        for (int i = 0; i < size; i++) {
-            if (ergenkaIndex[i] == -1) {
-                break;
-            }
-            eliminateErgenkas[idx++] = ergenkas[ergenkaIndex[i]];
-        }
-
-        return eliminateErgenkas;
+        return remaining;
     }
 }
