@@ -2,8 +2,9 @@ package bg.sofia.uni.fmi.mjt.show.ergenka;
 
 import bg.sofia.uni.fmi.mjt.show.date.DateEvent;
 
-public class HumorousErgenka implements Ergenka{
-    public HumorousErgenka(String name, short age, int romanceLevel, int humorLevel, int rating) {        this.name = name;
+public class HumorousErgenka implements Ergenka {
+    public HumorousErgenka(String name, short age, int romanceLevel, int humorLevel, int rating) {
+        this.name = name;
         this.age = age;
         this.romanceLevel = romanceLevel;
         this.humorLevel = humorLevel;
@@ -37,27 +38,34 @@ public class HumorousErgenka implements Ergenka{
 
     @Override
     public void reactToDate(DateEvent dateEvent) {
+        if (dateEvent == null) {
+            return;  // Do nothing if dateEvent is null
+        }
+
         int bonuses = 0;
-        /*
-        +4 точки, ако срещата е разумно дълга (>= 30 мин и <= 90 мин)
-        -2 точки, ако срещата е прекалено кратка (<30 мин)
-        -3 точки, ако срещата е прекалено дълга (>90 мин)
-         */
 
         int duration = dateEvent.getDuration();
         if (duration >= 30 && duration <= 90) {
             bonuses += 4;
-        }
-        if (duration < 30) {
+        } else if (duration < 30) {
             bonuses -= 2;
-        }
-        if (duration > 90) {
+        } else {
             bonuses -= 3;
         }
 
         int dateTension = dateEvent.getTensionLevel();
 
-        this.rating = (this.humorLevel * 5) / dateTension  + (int)(this.romanceLevel / 3) + bonuses;
+        // Protect against division by zero
+        int ratingChange;
+        if (dateTension == 0) {
+            //ratingChange = 0;
+            return;
+        } else {
+            ratingChange = (this.humorLevel * 5) / dateTension +
+                Math.floorDiv(this.romanceLevel, 3) + bonuses;
+        }
+
+        this.rating += ratingChange;
     }
 
     private String name;
