@@ -1,12 +1,12 @@
 package bg.sofia.uni.fmi.mjt.burnout.exception;
 
-public class DisappointmentException extends RuntimeException {
+public class InvalidSubjectRequirementsException extends Exception {
 
-    public DisappointmentException(String message) {
+    public InvalidSubjectRequirementsException(String message) {
         super(message);
     }
 
-    public DisappointmentException(String message, Throwable cause) {
+    public InvalidSubjectRequirementsException(String message, Throwable cause) {
         super(message, cause);
     }
 
