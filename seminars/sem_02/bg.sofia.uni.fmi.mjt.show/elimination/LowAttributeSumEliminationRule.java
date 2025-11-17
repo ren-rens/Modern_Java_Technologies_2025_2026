@@ -25,10 +25,8 @@ public class LowAttributeSumEliminationRule implements EliminationRule {
         int remainingCount = 0;
         for (Ergenka ergenka : ergenkas) {
             if (ergenka == null) {
-                continue;
-            }
-
-            if (ergenka.getHumorLevel() + ergenka.getRomanceLevel() >= this.threshold) {
+                remainingCount++;
+            } else if (ergenka.getHumorLevel() + ergenka.getRomanceLevel() >= this.threshold) {
                 remainingCount++;
             }
         }
@@ -37,7 +35,7 @@ public class LowAttributeSumEliminationRule implements EliminationRule {
     }
 
     private Ergenka[] findRemainingErgenkas(Ergenka[] ergenkas, int remainingCount) {
-        Ergenka[] remaining = new Ergenka[remainingCount];
+        Ergenka[] remaining = new Ergenka[remainingCount]; // initializing with null
         int idx = 0;
 
         for (Ergenka ergenka : ergenkas) {
@@ -50,7 +48,15 @@ public class LowAttributeSumEliminationRule implements EliminationRule {
             }
         }
 
+        fillWithNull(remaining, idx, remainingCount);
+
         return remaining;
+    }
+
+    private void fillWithNull(Ergenka[] remaining, int idx, int size) {
+        while (idx < size) {
+            remaining[idx++] = null;
+        }
     }
 
     private int threshold;
