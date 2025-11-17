@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.show.elimination;
 import bg.sofia.uni.fmi.mjt.show.ergenka.Ergenka;
 
 public class PublicVoteEliminationRule implements EliminationRule {
+    
     public PublicVoteEliminationRule(String[] votes) {
         this.votes = votes;
     }
@@ -73,7 +74,10 @@ public class PublicVoteEliminationRule implements EliminationRule {
         int idx = 0;
 
         for (int i = 0; i < ergenkasSize; i++) {
-            if (i != eliminatedIndex && ergenkas[i] != null) {
+            if (ergenkas[i] == null) {
+                remaining[idx++] = null;
+            }
+            else if (i != eliminatedIndex) {
                 remaining[idx++] = ergenkas[i];
             }
         }
@@ -82,4 +86,5 @@ public class PublicVoteEliminationRule implements EliminationRule {
     }
 
     private String[] votes;
+    
 }
