@@ -8,6 +8,7 @@ package bg.sofia.uni.fmi.mjt.burnout.subject;
  * @throws IllegalArgumentException if the credits are negative
  */
 public record SubjectRequirement(Category category, int minAmountEnrolled) {
+    
     public SubjectRequirement {
         if (category == null) {
             throw new IllegalArgumentException("The category is null!");
@@ -16,4 +17,5 @@ public record SubjectRequirement(Category category, int minAmountEnrolled) {
         if (minAmountEnrolled < 0) {
             throw new IllegalArgumentException("The credits are negative!");}
     }
+    
 }
