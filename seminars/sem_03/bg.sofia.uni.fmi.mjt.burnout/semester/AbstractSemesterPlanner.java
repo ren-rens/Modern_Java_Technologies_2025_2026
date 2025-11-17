@@ -3,20 +3,20 @@ package bg.sofia.uni.fmi.mjt.burnout.semester;
 import bg.sofia.uni.fmi.mjt.burnout.exception.DisappointmentException;
 import bg.sofia.uni.fmi.mjt.burnout.subject.UniversitySubject;
 
-public abstract sealed class  AbstractSemesterPlanner implements SemesterPlannerAPI permits SoftwareEngineeringSemesterPlanner, ComputerScienceSemesterPlanner {
-    
+public abstract sealed class AbstractSemesterPlanner implements SemesterPlannerAPI
+    permits SoftwareEngineeringSemesterPlanner, ComputerScienceSemesterPlanner {
+
     @Override
-    public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) throws IllegalArgumentException, DisappointmentException {
+    public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) {
         if (subjects == null || subjects.length == 0) {
             throw new IllegalArgumentException("if the subjects are missing or null!");
         }
 
-        if (maximumSlackTime < 0 || semesterDuration < 0) {
+        if (maximumSlackTime <= 0 || semesterDuration <= 0) {
             throw new IllegalArgumentException("The maximumSlackTime/semesterDuration are not positive integers");
         }
 
         int jarsCount = 0;
-
         int neededBreakTime = 0;
         int studyTime = 0;
 
@@ -33,7 +33,7 @@ public abstract sealed class  AbstractSemesterPlanner implements SemesterPlanner
             };
 
             int neededStudyTime = sub.neededStudyTime();
-            neededBreakTime += Math.round(coef * neededStudyTime);
+            neededBreakTime += (int) Math.ceil(coef * neededStudyTime);
             studyTime += neededStudyTime;
         }
 
@@ -49,5 +49,5 @@ public abstract sealed class  AbstractSemesterPlanner implements SemesterPlanner
 
         return jarsCount;
     }
-    
+
 }
