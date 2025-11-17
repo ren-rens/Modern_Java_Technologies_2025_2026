@@ -31,4 +31,5 @@ public sealed interface SemesterPlannerAPI permits AbstractSemesterPlanner {
      * @return the number of jars grandma sends that are needed for survival
      */
     int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) throws IllegalArgumentException, DisappointmentException;
+
 }
