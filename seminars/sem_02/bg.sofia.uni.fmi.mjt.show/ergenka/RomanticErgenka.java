@@ -41,16 +41,21 @@ public class RomanticErgenka implements Ergenka {
 
     @Override
     public void reactToDate(DateEvent dateEvent) {
-        if (dateEvent == null) {
-            return;
+        int ratingChange = 0; // stays like this if dateEvent is null or tension == 0
+
+        if (dateEvent != null && dateEvent.getTensionLevel() != 0) {
+            // dateEvent not null can find bonuses
+            int bonuses = findBonuses(dateEvent);
+
+            ratingChange = (this.romanceLevel * 7) / dateEvent.getTensionLevel() +
+                    Math.floorDiv(this.humorLevel, 3) + bonuses;
         }
 
+        this.rating += ratingChange;
+    }
+
+    private int findBonuses(DateEvent dateEvent) {
         int bonuses = 0;
-        /*
-        +5 точки, ако локацията на срещата е любима на участника (case insensitive)
-        -3 точки, ако срещата е прекалено кратка (<30 мин)
-        -2 точки, ако срещата е прекалено дълга (>120 мин)
-         */
 
         String location = dateEvent.getLocation();
         if (location != null && this.favoriteDateLocation != null &&
@@ -66,25 +71,14 @@ public class RomanticErgenka implements Ergenka {
             bonuses -= 2;
         }
 
-        int dateTension = dateEvent.getTensionLevel();
-
-        int ratingChange;
-        if (dateTension == 0) {
-            return;
-            //ratingChange = 0;  // not sure
-        } else {
-            ratingChange = (this.romanceLevel * 7) / dateTension +
-                Math.floorDiv(this.humorLevel, 3) + bonuses;
-        }
-
-        this.rating += ratingChange;
+        return bonuses;
     }
 
-    private String name;
-    private short age;
-    private int romanceLevel;
-    private int humorLevel;
+    private final String name;
+    private final short age;
+    private final int romanceLevel;
+    private final int humorLevel;
     private int rating;
-    private String favoriteDateLocation;
+    private final String favoriteDateLocation;
 
 }
