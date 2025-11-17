@@ -8,7 +8,8 @@ import bg.sofia.uni.fmi.mjt.burnout.subject.Category;
 import bg.sofia.uni.fmi.mjt.burnout.subject.SubjectRequirement;
 import bg.sofia.uni.fmi.mjt.burnout.subject.UniversitySubject;
 
-public final class SoftwareEngineeringSemesterPlanner extends AbstractSemesterPlanner{
+public final class SoftwareEngineeringSemesterPlanner extends AbstractSemesterPlanner {
+    
     @Override
     public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) throws IllegalArgumentException, DisappointmentException {
         return super.calculateJarCount(subjects, maximumSlackTime, semesterDuration);
@@ -192,4 +193,5 @@ public final class SoftwareEngineeringSemesterPlanner extends AbstractSemesterPl
 
         return idx;
     }
+    
 }
