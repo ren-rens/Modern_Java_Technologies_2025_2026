@@ -1,9 +1,7 @@
 package bg.sofia.uni.fmi.mjt.burnout.exception;
 
-import javax.swing.table.TableRowSorter;
+public class DisappointmentException extends RuntimeException {
 
-public class DisappointmentException extends Throwable {
-    
     public DisappointmentException(String message) {
         super(message);
     }
@@ -11,5 +9,5 @@ public class DisappointmentException extends Throwable {
     public DisappointmentException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }
