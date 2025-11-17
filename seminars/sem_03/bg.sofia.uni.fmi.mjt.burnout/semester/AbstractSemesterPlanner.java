@@ -3,7 +3,8 @@ package bg.sofia.uni.fmi.mjt.burnout.semester;
 import bg.sofia.uni.fmi.mjt.burnout.exception.DisappointmentException;
 import bg.sofia.uni.fmi.mjt.burnout.subject.UniversitySubject;
 
-public abstract sealed class  AbstractSemesterPlanner implements SemesterPlannerAPI permits SoftwareEngineeringSemesterPlanner, ComputerScienceSemesterPlanner{
+public abstract sealed class  AbstractSemesterPlanner implements SemesterPlannerAPI permits SoftwareEngineeringSemesterPlanner, ComputerScienceSemesterPlanner {
+    
     @Override
     public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) throws IllegalArgumentException, DisappointmentException {
         if (subjects == null || subjects.length == 0) {
@@ -48,4 +49,5 @@ public abstract sealed class  AbstractSemesterPlanner implements SemesterPlanner
 
         return jarsCount;
     }
+    
 }
