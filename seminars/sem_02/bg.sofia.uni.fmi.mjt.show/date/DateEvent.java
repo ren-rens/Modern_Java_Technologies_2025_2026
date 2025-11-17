@@ -1,6 +1,7 @@
 package bg.sofia.uni.fmi.mjt.show.date;
 
 public class DateEvent {
+
     private static final int TENSION_LEVEL_MIN = 0;
     private static final int TENSION_LEVEL_MAX = 10;
 
@@ -11,6 +12,7 @@ public class DateEvent {
     public DateEvent(String location, int tensionLevel, int duration) {
         this.location = location;
         this.duration = duration;
+
         if (tensionLevel < TENSION_LEVEL_MIN) {
             this.tensionLevel = TENSION_LEVEL_MIN;
         } else {
@@ -29,4 +31,5 @@ public class DateEvent {
     public int getDuration() {
         return duration;
     }
+
 }
