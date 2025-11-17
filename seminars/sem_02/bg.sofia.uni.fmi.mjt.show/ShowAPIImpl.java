@@ -30,8 +30,7 @@ public class ShowAPIImpl implements ShowAPI {
 
         // If dateEvent is null, use a default DateEvent
         if (dateEvent == null) {
-            //dateEvent = new DateEvent("Default", 5, 60);
-            dateEvent = new DateEvent("", 0, 0);
+            dateEvent = new DateEvent("", 1, 60);
         }
 
         for (Ergenka ergenka : this.ergenkas) {
@@ -66,10 +65,6 @@ public class ShowAPIImpl implements ShowAPI {
 
             // The rule returns the remaining ergenkas directly
             this.ergenkas = eliminationRule.eliminateErgenkas(this.ergenkas);
-
-//            if (this.ergenkas == null) {
-//                this.ergenkas = new Ergenka[0];
-//            }
         }
     }
 
@@ -81,7 +76,6 @@ public class ShowAPIImpl implements ShowAPI {
 
         ergenka.reactToDate(dateEvent);
     }
-
 
     private Ergenka[] ergenkas;
     private EliminationRule[] defaultEliminationRules;
