@@ -14,6 +14,7 @@ package bg.sofia.uni.fmi.mjt.burnout.subject;
  * @throws IllegalArgumentException if the neededStudy time is not positive
  */
 public record UniversitySubject(String name, int credits, int rating, Category category, int neededStudyTime) {
+    
     public UniversitySubject {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("The name of the subject is null or blank!");
@@ -35,4 +36,5 @@ public record UniversitySubject(String name, int credits, int rating, Category c
             throw new IllegalArgumentException("The needed time is not positive!");
         }
     }
+    
 }
