@@ -28,7 +28,7 @@ public class LowestRatingEliminationRule implements EliminationRule {
         }
 
         // Build array of REMAINING ergenkas
-        return  findRemaningErgenkas(ergenkas, lowestRating, remainingCount, ergenkas.length - nonNullCount);
+        return findRemaningErgenkas(ergenkas, lowestRating, remainingCount);
     }
 
     private int notNullElements(Ergenka[] ergenkas) {
@@ -64,31 +64,33 @@ public class LowestRatingEliminationRule implements EliminationRule {
         for (Ergenka ergenka : ergenkas) {
             if (ergenka == null) {
                 continue;
-            }
-
-            if (ergenka.getRating() != lowestRating) {
-                remainingCount++;
+            } else if (ergenka.getRating() != lowestRating) {
+                remainingCount++; // keep higher rated ergenkis
             }
         }
 
         return remainingCount;
     }
 
-    private Ergenka[] findRemaningErgenkas(Ergenka[] ergenkas, int lowestRating, int remainingCount, int nullCount) {
-        Ergenka[] remaining = new Ergenka[remainingCount + nullCount];
+    private Ergenka[] findRemaningErgenkas(Ergenka[] ergenkas, int lowestRating, int remainingCount) {
+        Ergenka[] remaining = new Ergenka[remainingCount];
         int idx = 0;
 
         for (Ergenka ergenka : ergenkas) {
+            if (idx == remainingCount) {
+                break;
+            }
+
             if (ergenka == null) {
-                remaining[idx++] = null;
                 continue;
             }
 
-            if (ergenka.getRating() != lowestRating) {
+            if (ergenka.getRating() > lowestRating) {
                 remaining[idx++] = ergenka;
             }
         }
 
         return remaining;
     }
+    
 }
