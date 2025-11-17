@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.burnout.semester;
 
 import bg.sofia.uni.fmi.mjt.burnout.exception.CryToStudentsDepartmentException;
-import bg.sofia.uni.fmi.mjt.burnout.exception.DisappointmentException;
 import bg.sofia.uni.fmi.mjt.burnout.exception.InvalidSubjectRequirementsException;
 import bg.sofia.uni.fmi.mjt.burnout.plan.SemesterPlan;
 import bg.sofia.uni.fmi.mjt.burnout.subject.Category;
@@ -9,189 +8,223 @@ import bg.sofia.uni.fmi.mjt.burnout.subject.SubjectRequirement;
 import bg.sofia.uni.fmi.mjt.burnout.subject.UniversitySubject;
 
 public final class SoftwareEngineeringSemesterPlanner extends AbstractSemesterPlanner {
-    
+
     @Override
-    public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) throws IllegalArgumentException, DisappointmentException {
+    public int calculateJarCount(UniversitySubject[] subjects, int maximumSlackTime, int semesterDuration) {
         return super.calculateJarCount(subjects, maximumSlackTime, semesterDuration);
     }
 
     @Override
-    public UniversitySubject[] calculateSubjectList(SemesterPlan semesterPlan) throws InvalidSubjectRequirementsException, CryToStudentsDepartmentException {
-        if (semesterPlan == null || semesterPlan.subjects() == null || semesterPlan.subjects().length == 0) {
-            throw new IllegalArgumentException("Semester plan is null!");
-        }
+    public UniversitySubject[] calculateSubjectList(SemesterPlan semesterPlan)
+        throws InvalidSubjectRequirementsException {
+        validateSemesterPlan(semesterPlan);
 
         UniversitySubject[] subjects = semesterPlan.subjects();
-
         sortForSE(subjects);
 
-        if (semesterPlan.subjectRequirements() == null || semesterPlan.subjectRequirements().length > Category.values().length) {
-            throw new InvalidSubjectRequirementsException("The subjectRequirements is null or contain duplicate categories");
-        }
-
+        SubjectRequirement[] requirements = semesterPlan.subjectRequirements();
+        validateRequirements(requirements);
 
         UniversitySubject[] currentSubjects = new UniversitySubject[semesterPlan.subjects().length];
         int size = coverSubjects(subjects, semesterPlan, currentSubjects);
 
-        UniversitySubject[] res = new UniversitySubject[size];
-        System.arraycopy(currentSubjects, 0, res, 0, size);
+        return trimToSize(currentSubjects, size);
+    }
 
-        return res;
-        //return currentSubjects;
+    private void validateSemesterPlan(SemesterPlan semesterPlan) {
+        if (semesterPlan == null || semesterPlan.subjects() == null || semesterPlan.subjects().length == 0) {
+            throw new IllegalArgumentException("Semester plan is null!");
+        }
     }
 
     private void sortForSE(UniversitySubject[] subjects) {
         int size = subjects.length;
-
         sortByCategories(subjects, size);
-
-        // are sorted by categories now should by credits
-        sortByCreditsStartAndEndIdx(subjects, size);
+        sortByCreditsWithinCategories(subjects, size);
     }
 
     private void sortByCategories(UniversitySubject[] subjects, int size) {
-        boolean swapped = false;
-
         for (int i = 0; i < size - 1; i++) {
-            swapped = false;
+            boolean swapped = false;
 
             for (int j = 0; j < size - i - 1; j++) {
-                int shouldSwap = subjects[j + 1].category().compareTo(subjects[j].category());
-                if (shouldSwap < 0) {
-                    // swap
-                    UniversitySubject temp = subjects[j];
-                    subjects[j] = subjects[j + 1];
-                    subjects[j + 1] = temp;
-
+                if (subjects[j + 1].category().compareTo(subjects[j].category()) < 0) {
+                    swap(subjects, j, j + 1);
                     swapped = true;
                 }
             }
 
-            // if no swaps were made, the array is sorted
             if (!swapped) {
                 break;
             }
         }
     }
 
-    private void sortByCreditsStartAndEndIdx(UniversitySubject[] subjects, int size) {
+    private void sortByCreditsWithinCategories(UniversitySubject[] subjects, int size) {
         int startIdx = 0;
-        int endIdx = 0;
 
         for (int j = 0; j < size - 1; j++) {
-            int shouldSwap = subjects[j + 1].category().compareTo(subjects[j].category());
-            if (shouldSwap == 0) {
-                // same category
-                endIdx = j;
-            }
-            else {
-                // we have reached a place where we end one category and start another one
-                // should sort by credits now from start index until end index
-
-                sortByCredits(subjects, startIdx, endIdx);
+            if (subjects[j].category().compareTo(subjects[j + 1].category()) != 0) {
+                sortByCredits(subjects, startIdx, j);
                 startIdx = j + 1;
-                endIdx = startIdx;
             }
         }
+
+        sortByCredits(subjects, startIdx, size - 1);
     }
 
     private void sortByCredits(UniversitySubject[] subjects, int startIdx, int endIdx) {
-        boolean swapped = false;
+        for (int i = startIdx; i <= endIdx; i++) {
+            boolean swapped = false;
+            int innerLimit = startIdx + (endIdx - startIdx) - (i - startIdx);
 
-        for (int i = startIdx; i < endIdx - 1; i++) {
-            swapped = false;
-
-            for (int j = startIdx; j < endIdx - i - 1; j++) {
+            for (int j = startIdx; j < innerLimit; j++) {
                 if (subjects[j].credits() < subjects[j + 1].credits()) {
-                    // swap
-                    UniversitySubject temp = subjects[j];
-                    subjects[j] = subjects[j + 1];
-                    subjects[j + 1] = temp;
-
+                    swap(subjects, j, j + 1);
                     swapped = true;
                 }
             }
 
-            // if no swaps were made, the array is sorted
             if (!swapped) {
                 break;
             }
         }
     }
 
-    private int coverSubjects(UniversitySubject[] subjects, SemesterPlan semesterPlan, UniversitySubject[] currentSubjects) throws CryToStudentsDepartmentException {
-        SubjectRequirement[] req = semesterPlan.subjectRequirements();
+    private void swap(UniversitySubject[] subjects, int i, int j) {
+        UniversitySubject temp = subjects[i];
+        subjects[i] = subjects[j];
+        subjects[j] = temp;
+    }
 
-        int minimalAmountOfCredits = semesterPlan.minimalAmountOfCredits();
+    private void validateRequirements(SubjectRequirement[] requirements)
+        throws InvalidSubjectRequirementsException {
+        if (requirements == null) {
+            throw new InvalidSubjectRequirementsException("The subjectRequirements is null");
+        }
+
+        checkForDuplicateCategories(requirements);
+    }
+
+    private void checkForDuplicateCategories(SubjectRequirement[] requirements)
+        throws InvalidSubjectRequirementsException {
+        boolean[] seen = new boolean[Category.values().length];
+        for (SubjectRequirement req : requirements) {
+            if (seen[req.category().getIdx()]) {
+                throw new InvalidSubjectRequirementsException(
+                    "The subjectRequirements contain duplicate categories");
+            }
+            seen[req.category().getIdx()] = true;
+        }
+    }
+
+    private int coverSubjects(UniversitySubject[] subjects, SemesterPlan semesterPlan,
+                              UniversitySubject[] currentSubjects) throws CryToStudentsDepartmentException {
+        int[] coveredSubjectsCount = new int[Category.values().length];
         int currentCredits = 0;
-        int[] coveredSubjectsCredits = new int[req.length];
-        boolean subjectsCreditsAreCovered = false;
-
         int idx = 0;
 
         for (UniversitySubject sub : subjects) {
-            if (currentCredits >= minimalAmountOfCredits && subjectsCreditsAreCovered) {
-                break;
-            }
-
-            for (SubjectRequirement r : req) {
-                if (r.category().equals(sub.category())) {
-                    // same category
-                    int coveredSubjectsCredit = coveredSubjectsCredits[r.category().getIdx()];
-                    int minAmountEnrolled = r.minAmountEnrolled();
-
-                    if (minAmountEnrolled <= coveredSubjectsCredit) {
-                        break;
-                    }
-
-                    coveredSubjectsCredit += minAmountEnrolled;
-                    coveredSubjectsCredits[r.category().getIdx()] = coveredSubjectsCredit;
-                    currentSubjects[idx++] = sub;
-
-                    currentCredits += sub.credits();
-                }
-            }
-
-            subjectsCreditsAreCovered = true;
-            for (int coveredSubjectsCredit : coveredSubjectsCredits) {
-                if (coveredSubjectsCredit == 0) {
-                    subjectsCreditsAreCovered = false;
-                    break;
-                }
-            }
-        }
-
-        if (currentCredits < minimalAmountOfCredits) {
-            // should pass by all subjects again and sign more
-            sortByCredits(subjects, 0, subjects.length);
-
-            for (UniversitySubject sub : subjects) {
-                if (currentCredits >= minimalAmountOfCredits) {
-                    break;
-                }
-
-                boolean inResult = false;
-                for (UniversitySubject subject : currentSubjects) {
-                    if (sub == subject) {
-                        inResult = true;
-                        break;
-                    }
-                }
-
-                if (inResult) {
-                    continue;
-                }
-
+            if (shouldAddSubjectForRequirement(sub, semesterPlan.subjectRequirements(), coveredSubjectsCount)) {
+                idx = addSubject(currentSubjects, idx, sub);
                 currentCredits += sub.credits();
-                currentSubjects[idx++] = sub;
+                coveredSubjectsCount[sub.category().getIdx()]++;
             }
         }
 
-        if (!subjectsCreditsAreCovered || currentCredits < minimalAmountOfCredits) {
-            throw new CryToStudentsDepartmentException("Software engineering student cannot cover their semester credits!");
+        boolean allRequirementsCovered = areAllRequirementsCovered(
+            semesterPlan.subjectRequirements(), coveredSubjectsCount);
+
+        if (currentCredits < semesterPlan.minimalAmountOfCredits()) {
+            currentCredits = addSubjectsForCredits(subjects, currentSubjects, idx, currentCredits,
+                semesterPlan.minimalAmountOfCredits());
+            idx = countAddedSubjects(currentSubjects);
+        }
+
+        if (!allRequirementsCovered || currentCredits < semesterPlan.minimalAmountOfCredits()) {
+            throw new CryToStudentsDepartmentException(
+                "Software engineering student cannot cover their semester credits!");
         }
 
         return idx;
     }
-    
+
+    private boolean shouldAddSubjectForRequirement(UniversitySubject subject,
+                                                   SubjectRequirement[] requirements,
+                                                   int[] coveredSubjectsCount) {
+        for (SubjectRequirement req : requirements) {
+            if (req.category().equals(subject.category())) {
+                int coveredCount = coveredSubjectsCount[subject.category().getIdx()];
+                return coveredCount < req.minAmountEnrolled();
+            }
+        }
+
+        return false;
+    }
+
+    private int addSubject(UniversitySubject[] subjects, int idx, UniversitySubject subject) {
+        subjects[idx] = subject;
+        return idx + 1;
+    }
+
+    private boolean areAllRequirementsCovered(SubjectRequirement[] requirements,
+                                              int[] coveredSubjectsCount) {
+        for (SubjectRequirement req : requirements) {
+            if (coveredSubjectsCount[req.category().getIdx()] < req.minAmountEnrolled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int addSubjectsForCredits(UniversitySubject[] subjects,
+                                      UniversitySubject[] currentSubjects,
+                                      int currentIdx, int currentCredits, int minimalCredits) {
+        UniversitySubject[] sortedSubjects = subjects.clone();
+        sortByCredits(sortedSubjects, 0, sortedSubjects.length - 1);
+
+        for (UniversitySubject sub : sortedSubjects) {
+            if (currentCredits >= minimalCredits) {
+                break;
+            }
+
+            if (!isSubjectAlreadyAdded(sub, currentSubjects, currentIdx)) {
+                currentSubjects[currentIdx++] = sub;
+                currentCredits += sub.credits();
+            }
+        }
+
+        return currentCredits;
+    }
+
+    private boolean isSubjectAlreadyAdded(UniversitySubject subject,
+                                          UniversitySubject[] addedSubjects, int count) {
+        for (int i = 0; i < count; i++) {
+            if (addedSubjects[i] == subject) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int countAddedSubjects(UniversitySubject[] subjects) {
+        int count = 0;
+        for (UniversitySubject subject : subjects) {
+            if (subject != null) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private UniversitySubject[] trimToSize(UniversitySubject[] subjects, int size) {
+        UniversitySubject[] result = new UniversitySubject[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = subjects[i];
+        }
+
+        return result;
+    }
+
 }
