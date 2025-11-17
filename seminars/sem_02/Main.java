@@ -10,50 +10,38 @@ import bg.sofia.uni.fmi.mjt.show.ergenka.RomanticErgenka;
 
 import javax.naming.PartialResultException;
 
+public void print(ShowAPI api) {
+    System.out.println("Ergenkis in the show right now:");
+    Ergenka[] currErgenkas = api.getErgenkas();
+    for (Ergenka curr : currErgenkas) {
+        if (curr == null) {
+            System.out.println("Null ergenka");
+            continue;
+        }
+
+        System.out.println(curr.getName());
+        System.out.println(curr.getRating());
+    }
+}
+
 void main() {
     //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
     // to see how IntelliJ IDEA suggests fixing it.
-    IO.println(String.format("Hello and welcome!"));
+    IO.println(String.format("Hello and welcome, ergenkas!\nGood luck!"));
 
-    Ergenka humorousErgenka = new HumorousErgenka("Kristina", (short)16, 8, 6, 7);
+    Ergenka humorousErgenka = new HumorousErgenka("Kristina", (short)16, 0, 0, 2);
     Ergenka romanticErgenka = new RomanticErgenka("Nataliya", (short)23, 9, 9, 7, "London");
-    Ergenka[] ergenkas = new Ergenka[] {humorousErgenka, romanticErgenka};
+    Ergenka[] ergenkas = new Ergenka[] {humorousErgenka, romanticErgenka, null};
 
     String[] votes = new String[]{"Nataliya", "Nataliya"};
     EliminationRule[] defaultEliminationRules = new EliminationRule[]{new LowestRatingEliminationRule()/*, new PublicVoteEliminationRule(votes)*/};
 
     ShowAPI api = new ShowAPIImpl(ergenkas, defaultEliminationRules);
-    Ergenka[] currErgenkas = api.getErgenkas();
-    for (Ergenka curr : currErgenkas) {
-        System.out.println(curr.getName());
-    }
+    print(api);
 
-    DateEvent date = new DateEvent("London", 7, 45);
+    api.organizeDate(humorousErgenka, new DateEvent("", 30, 121));
 
-    api.organizeDate(romanticErgenka, date);
-
-    currErgenkas = api.getErgenkas();
-
-    api.playRound(date);
-    currErgenkas = api.getErgenkas();
-    for (Ergenka curr : currErgenkas) {
-        System.out.println(curr.getName());
-        System.out.println(curr.getRating());
-    }
-
-    api.eliminateErgenkas(null);
-    api.eliminateErgenkas(null);
-
-    currErgenkas = api.getErgenkas();
-
-    if(currErgenkas == null) {
-        System.out.println("null ptr");
-    }
-    else {
-        for (Ergenka curr : currErgenkas) {
-            System.out.println(curr.getName());
-            System.out.println(curr.getRating());
-        }
-    }
+    //api.eliminateErgenkas(null);
+    print(api);
 
 }
