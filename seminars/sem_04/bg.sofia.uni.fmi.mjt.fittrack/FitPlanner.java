@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.fittrack;
 
 import bg.sofia.uni.fmi.mjt.fittrack.exception.OptimalPlanImpossibleException;
-import bg.sofia.uni.fmi.mjt.fittrack.workout.CardioWorkout;
 import bg.sofia.uni.fmi.mjt.fittrack.workout.Workout;
 import bg.sofia.uni.fmi.mjt.fittrack.workout.WorkoutByCalories;
 import bg.sofia.uni.fmi.mjt.fittrack.workout.WorkoutByDifficulty;
@@ -9,20 +8,16 @@ import bg.sofia.uni.fmi.mjt.fittrack.workout.WorkoutType;
 import bg.sofia.uni.fmi.mjt.fittrack.workout.filter.WorkoutFilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class FitPlanner implements FitPlannerAPI {
+    
     public FitPlanner(Collection<Workout> availableWorkouts) {
         if (availableWorkouts == null) {
             throw new IllegalArgumentException("Invalid input for availableWorkouts in constructor of FitPlanner!");
@@ -72,8 +67,16 @@ public class FitPlanner implements FitPlannerAPI {
         boolean[][] usedWorkouts = findProfitInCalories(totalMinutes);
         Set<Workout> currWorkouts = findWorkoutsByProfit(usedWorkouts, totalMinutes, availableWorkouts.size());
 
-        Set<Workout> result = new TreeSet<>(new WorkoutByDifficulty());
-        result.addAll(currWorkouts);
+        // Sort by calories descending, then by difficulty descending
+        List<Workout> result = new ArrayList<>(currWorkouts);
+        result.sort(new Comparator<Workout>() {
+            @Override
+            public int compare(Workout w1, Workout w2) {
+                int caloriesCompare = Integer.compare(w2.getCaloriesBurned(), w1.getCaloriesBurned());
+
+                return caloriesCompare != 0 ? caloriesCompare : Integer.compare(w2.getDifficulty(), w1.getDifficulty());
+            }
+        });
 
         return List.copyOf(result);
     }
@@ -148,6 +151,11 @@ public class FitPlanner implements FitPlannerAPI {
 
         for (Workout workout : availableWorkouts) {
             WorkoutType type = workout.getType();
+
+            if (!mp.containsKey(type)) {
+                mp.put(type, new ArrayList<>());
+            }
+
             List<Workout> curr = mp.get(type);
 
             if (curr.contains(workout)) {
@@ -167,10 +175,9 @@ public class FitPlanner implements FitPlannerAPI {
             return List.of();
         }
 
-        Set<Workout> byCalories = new TreeSet<>(new WorkoutByCalories());
-        byCalories.addAll(availableWorkouts);
-
-        return List.copyOf(byCalories);
+        List<Workout> result = new ArrayList<>(availableWorkouts);
+        result.sort(new WorkoutByCalories()); // less optimal but TreeSet does not put all workouts only the unique ones
+        return List.copyOf(result);
     }
 
     @Override
@@ -179,9 +186,9 @@ public class FitPlanner implements FitPlannerAPI {
             return List.of();
         }
 
-        Set<Workout> s = new TreeSet<>(new WorkoutByDifficulty());
-        s.addAll(availableWorkouts);
-        return List.copyOf(s);
+        List<Workout> result = new ArrayList<>(availableWorkouts);
+        result.sort(new WorkoutByDifficulty());
+        return List.copyOf(result);
     }
 
     @Override
@@ -190,4 +197,5 @@ public class FitPlanner implements FitPlannerAPI {
     }
 
     Collection<Workout> availableWorkouts;
+    
 }
