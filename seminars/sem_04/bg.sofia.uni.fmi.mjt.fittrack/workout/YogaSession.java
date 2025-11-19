@@ -5,7 +5,7 @@ import bg.sofia.uni.fmi.mjt.fittrack.exception.InvalidWorkoutException;
 public final class YogaSession implements Workout {
 
     public YogaSession(String name, int duration, int caloriesBurned, int difficulty) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isBlank()) {
             throw new InvalidWorkoutException("Invalid name for workout!");
         }
 
@@ -17,7 +17,7 @@ public final class YogaSession implements Workout {
             throw new InvalidWorkoutException("Invalid calories burned for workout!");
         }
 
-        if (difficulty < 1 || difficulty > 5) {
+        if (difficulty < MIN_DIFFICULTY || difficulty > MAX_DIFFICULTY) {
             throw new InvalidWorkoutException("Invalid difficulty for workout!");
         }
 
@@ -25,6 +25,7 @@ public final class YogaSession implements Workout {
         this.duration = duration;
         this.caloriesBurned = caloriesBurned;
         this.difficulty = difficulty;
+        this.type = WorkoutType.YOGA;
     }
 
     public String getName() {
@@ -52,5 +53,8 @@ public final class YogaSession implements Workout {
     int caloriesBurned;
     int difficulty;
     WorkoutType type;
+
+    private static final int MAX_DIFFICULTY = 5;
+    private static final int MIN_DIFFICULTY = 1;
 
 }
