@@ -14,7 +14,8 @@ public class NameWorkoutFilter implements WorkoutFilter {
 
     @Override
     public boolean matches(Workout workout) {
-        return !caseSensitive ? workout.getName().contains(keyword) : workout.getName().equals(keyword);
+        return caseSensitive ? workout.getName().contains(keyword) :
+            workout.getName().toLowerCase().contains(keyword.toLowerCase());
     }
 
     String keyword;
