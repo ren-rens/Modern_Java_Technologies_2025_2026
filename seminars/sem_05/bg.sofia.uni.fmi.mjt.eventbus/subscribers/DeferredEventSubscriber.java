@@ -1,16 +1,16 @@
 package bg.sofia.uni.fmi.mjt.eventbus.subscribers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
 
 import bg.sofia.uni.fmi.mjt.eventbus.events.Event;
 import bg.sofia.uni.fmi.mjt.eventbus.events.PriorityComparator;
 
 public class DeferredEventSubscriber<T extends Event<?>> implements Subscriber<T>, Iterable<T> {
 
-    DeferredEventSubscriber() {
+    public DeferredEventSubscriber() {
         unprocessedEvents = new LinkedList<>();
     }
 
@@ -38,11 +38,10 @@ public class DeferredEventSubscriber<T extends Event<?>> implements Subscriber<T
      */
     @Override
     public Iterator<T> iterator() {
-        //PriorityQueue<T> or TreeSet priority
-        TreeSet<T> priority = new TreeSet<>(new PriorityComparator<>());
-        priority.addAll(unprocessedEvents);
+        List<T> sortedEvents = new ArrayList<>(unprocessedEvents);
+        sortedEvents.sort(new PriorityComparator<>());
 
-        return priority.iterator();
+        return sortedEvents.iterator();
     }
 
     /**
