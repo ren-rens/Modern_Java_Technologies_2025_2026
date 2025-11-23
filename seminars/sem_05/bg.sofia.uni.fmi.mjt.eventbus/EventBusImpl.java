@@ -8,13 +8,17 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class EventBusImpl implements EventBus {
+
+    public EventBusImpl() {
+        this.subscriptions = new HashMap<>();
+        this.eventLogs = new HashMap<>();
+    }
 
     /**
      * Subscribes the given subscriber to the given event type.
@@ -28,13 +32,17 @@ public class EventBusImpl implements EventBus {
      */
     @Override
     public <T extends Event<?>> void subscribe(Class<T> eventType, Subscriber<? super T> subscriber) {
-        Collection<Subscriber<?>> subs = subscriptions.get(eventType);
+        if (eventType == null || subscriber == null) {
+            throw new IllegalArgumentException("Invalid evenType OR subscriber in EventBusImpl subscribe!");
+        }
+
+        Collection<Subscriber<?>> subs = subscriptions.computeIfAbsent(eventType, k -> new HashSet<>());
+
         if (subs.contains(subscriber)) {
             return;
         }
 
         subs.add(subscriber);
-        subscriptions.put(eventType, subs);
     }
 
     /**
@@ -55,7 +63,7 @@ public class EventBusImpl implements EventBus {
 
         // if subscriber not in event -> MissingSubscriptionException
         Collection<Subscriber<?>> subs = subscriptions.get(eventType);
-        if (!subs.contains(subscriber)) {
+        if (subs == null || !subs.contains(subscriber)) {
             throw new MissingSubscriptionException("Invalid subscriber give to unsubscribe event!");
         }
 
@@ -142,22 +150,22 @@ public class EventBusImpl implements EventBus {
 
         Collection<Event<?>> events = eventLogs.get(eventType);
 
-        // if there are no events for this type
         if (events == null) {
             return List.of();
         }
 
         // for adding the events between from and to
-        Collection<Event<?>> filteredEvents = new ArrayList<>();
+        List<Event<?>> filteredEvents = new ArrayList<>();
 
         for (Event<?> event : events) {
             Instant timestamp = event.getTimestamp();
 
-            // from <= timestamp < to
             if (!timestamp.isBefore(from) && timestamp.isBefore(to)) {
                 filteredEvents.add(event);
             }
         }
+
+        filteredEvents.sort((e1, e2) -> e1.getTimestamp().compareTo(e2.getTimestamp())); // sort by timestamp
 
         return Collections.unmodifiableCollection(filteredEvents);
     }
@@ -174,12 +182,12 @@ public class EventBusImpl implements EventBus {
     @Override
     public <T extends Event<?>> Collection<Subscriber<?>> getSubscribersForEvent(Class<T> eventType) {
         if (eventType == null) {
-            throw new IllegalArgumentException("Invalid event type in getSubscribersForEvent in EventBusImpl!");
+            throw new IllegalArgumentException("Invalid event type in getSubscribersForEvent!");
         }
 
-        Set<Subscriber<?>> subscribersForEventType = new HashSet<>(subscriptions.get(eventType));
+        Collection<Subscriber<?>> subs = subscriptions.get(eventType);
 
-        return Collections.unmodifiableCollection(subscribersForEventType);
+        return subs == null ? Collections.emptySet() : Collections.unmodifiableCollection(new HashSet<>(subs));
     }
 
     private Map<Class<? extends Event<?>>, Collection<Subscriber<?>>> subscriptions; // type of event -> subscriber
