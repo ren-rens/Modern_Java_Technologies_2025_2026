@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bg.sofia.uni.fmi.mjt.pipeline.step.Step;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 /**
  * Represents a stage in a generic pipeline, consisting of a sequence of {@link Step steps}.
@@ -19,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
  * @param <I> the type of input accepted by the stage
  * @param <O> the type of output produced by the stage
  */
-public final class Stage<I, O> {
+public class Stage<I, O> {
 
     private final ArrayList<Step<?, ?>> steps;
 
@@ -40,7 +36,7 @@ public final class Stage<I, O> {
         List<Step<?, ?>> steps = new ArrayList<>();
         steps.add(initialStep);
 
-        return (Stage<I, O>) new Stage(steps);
+        return new Stage<>(steps);
     }
 
     /**
@@ -59,17 +55,17 @@ public final class Stage<I, O> {
      * The returned stage updates the output type to {@code NEW_O}.
      *
      * @param step    the step to add
-     * @param <NEW_O> the output type of the new step
+     * @param <NewO> the output type of the new step
      * @return this stage instance cast to have output type {@code NEW_O}
      * @throws IllegalArgumentException if step is null
      */
-    public <NEW_O> Stage<I, NEW_O> addStep(Step<? super O, NEW_O> step) {
+    public <NewO> Stage<I, NewO> addStep(Step<? super O, NewO> step) {
         if (step == null) {
             throw new IllegalArgumentException("Invalid step given to Stage.addStep");
         }
 
         steps.add(step);
-        return (Stage<I, NEW_O>) this;
+        return (Stage<I, NewO>) this;
     }
 
     /**
