@@ -1,7 +1,6 @@
 package bg.sofia.uni.fmi.mjt.pipeline;
 
 import bg.sofia.uni.fmi.mjt.pipeline.stage.Stage;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,8 +94,6 @@ class PipelineTest {
 
         assertEquals(output, p.execute(input),
             "When given one stage input to execute in Pipeline should return the output produced by the stage of the pipeline");
-
-        //verify(s1).execute(input);
     }
 
     @Test
