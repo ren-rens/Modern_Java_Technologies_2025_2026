@@ -61,7 +61,7 @@ class CacheTest {
 
         Object result = cache.getCachedValue(1);
 
-        assertEquals(result, 2, "When checking a cache for existing key-value should return the value of the key");
+        assertEquals(2, result, "When checking a cache for existing key-value should return the value of the key");
     }
 
     @Test
