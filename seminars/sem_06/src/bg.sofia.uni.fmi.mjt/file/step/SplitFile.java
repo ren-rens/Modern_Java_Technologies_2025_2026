@@ -37,12 +37,9 @@ public class SplitFile implements Step<File, Set<File>> {
 
         for (String part : parts) {
             if (!part.isEmpty()) {
-                File curr = new File(part);
-                if (inResultSet(result, part)) {
-                    continue;
+                if (!inResultSet(result, part)) {
+                    result.add(new File(part));
                 }
-
-                result.add(new File(part));
             }
         }
 
