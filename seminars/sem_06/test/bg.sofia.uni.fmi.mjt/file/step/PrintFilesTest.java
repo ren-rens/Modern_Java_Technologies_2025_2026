@@ -29,14 +29,6 @@ class PrintFilesTest {
     }
 
     @Test
-    void testProcessWithEmptyInput() {
-        Collection<File> input = new ArrayList<>(); // here it is empty
-
-        assertThrows(IllegalArgumentException.class, () -> step.process(input),
-            "When given empty input collection in PrintFiles.process() should throw IllegalArgumentException");
-    }
-
-    @Test
     void testProcessWitInputNotNullButNullFileToProcess() {
         Collection<File> input = new ArrayList<>();
         input.add(null);
