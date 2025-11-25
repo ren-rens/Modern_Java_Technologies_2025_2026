@@ -36,7 +36,7 @@ public final class Pipeline<I, O> {
             throw new IllegalArgumentException("InitialStage given to pipeline is NULL!");
         }
 
-        List<Stage<?, ?>> result = new ArrayList();
+        List<Stage<?, ?>> result = new ArrayList<>();
         result.add(initialStage);
 
         return new Pipeline<>(result);
@@ -47,9 +47,14 @@ public final class Pipeline<I, O> {
      *
      * @param stages the initial list of stages
      */
-    private Pipeline(List<Stage<?, ?>> stages) {
+    Pipeline(List<Stage<?, ?>> stages) {
         this.stages = stages;
         this.cache = new Cache();
+    }
+
+    Pipeline(List<Stage<?, ?>> stages, Cache cache) {
+        this.stages = stages;
+        this.cache = cache;
     }
 
     /**
@@ -59,19 +64,19 @@ public final class Pipeline<I, O> {
      * the current pipeline. The returned pipeline is updated to reflect the new
      * output type {@code NEW_O}.
      *
-     * @param stage   the stage to add
-     * @param <NEW_O> the output type of the new stage
+     * @param stage  the stage to add
+     * @param <NewO> the output type of the new stage
      * @return this pipeline instance cast to a pipeline producing {@code NEW_O}
      */
     @SuppressWarnings("checkstyle:MethodTypeParameterName")
-    public <NEW_O> Pipeline<I, NEW_O> addStage(Stage<? super O, NEW_O> stage) {
+    public <NewO> Pipeline<I, NewO> addStage(Stage<? super O, NewO> stage) {
         if (stage == null) {
             throw new IllegalArgumentException("Stage added to pipeline cannot be null");
         }
 
         cache.clear();
         stages.add(stage);
-        return (Pipeline<I, NEW_O>) this;
+        return (Pipeline<I, NewO>) this;
     }
 
     /**
