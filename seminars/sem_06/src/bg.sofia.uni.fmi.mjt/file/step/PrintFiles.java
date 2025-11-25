@@ -23,13 +23,14 @@ public class PrintFiles implements Step<Collection<File>, Collection<File>> {
      */
     @Override
     public Collection<File> process(Collection<File> input) {
-        if (input == null || input.isEmpty()) {
+        if (input == null) {
             throw new IllegalArgumentException("Input collection given to process in PrintFiles is invalid!");
         }
 
         for (File f : input) {
             if (f == null) {
-                throw new IllegalArgumentException("File from input collection given to process in PrintFiles is null!");
+                throw new IllegalArgumentException("File from input " +
+                    "collection given to process in PrintFiles is null!");
             }
 
             System.out.println(f.getContent());
