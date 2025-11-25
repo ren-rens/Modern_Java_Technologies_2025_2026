@@ -22,7 +22,7 @@ class CountFilesTest {
     @Test
     void testProcessWithInputNotNull() {
         CountFiles step = new CountFiles();
-        Collection<File> input = mock();
+        Collection<File> input = mock(Collection.class);
         int size = 1;
 
         when(input.size()).thenReturn(size);
