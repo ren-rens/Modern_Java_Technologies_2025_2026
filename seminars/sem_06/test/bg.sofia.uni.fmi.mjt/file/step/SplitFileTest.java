@@ -25,7 +25,7 @@ class SplitFileTest {
     @Test
     void testProcessWithNullContent() {
         SplitFile step = new SplitFile();
-        File file = mock();
+        File file = mock(File.class);
 
         when(file.getContent()).thenReturn(null);
 
@@ -38,7 +38,7 @@ class SplitFileTest {
     @Test
     void testProcessWithEmptyContent() {
         SplitFile step = new SplitFile();
-        File file = mock();
+        File file = mock(File.class);
 
         when(file.getContent()).thenReturn("");
 
@@ -65,7 +65,7 @@ class SplitFileTest {
     @Test
     void testProcessWithMultipleWords() {
         SplitFile step = new SplitFile();
-        File file = mock();
+        File file = mock(File.class);
 
         when(file.getContent()).thenReturn("hello world test");
 
@@ -77,7 +77,7 @@ class SplitFileTest {
     @Test
     void testProcessWithDuplicateWords() {
         SplitFile step = new SplitFile();
-        File file = mock();
+        File file = mock(File.class);
 
         when(file.getContent()).thenReturn("hello hello world world");
 
@@ -92,7 +92,7 @@ class SplitFileTest {
     @Test
     void testProcessWithMultipleWhitespaces() {
         SplitFile step = new SplitFile();
-        File file = mock();
+        File file = mock(File.class);
 
         when(file.getContent()).thenReturn("hello    world\t\ttest\n\nfoo");
 
