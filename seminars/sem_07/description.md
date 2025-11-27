@@ -2,7 +2,7 @@
 
 Тази седмица задачата ни е да разработим модули на библиотека за обработка на изображения. Библиотеката ще може да работи с изображения в различни графични формати (JPEG, PNG, BMP) и ще прилага различни трансформации върху тях. В първата версия, клиентът иска функционалност за конвертиране на цветно изображение в черно-бяло и възможност за откриване на ръбовете в изображение.
 
-https://github.com/fmi/java-course/blob/c5da0c91bb0bff1f1b1cf30041014950cd442cde/07-io-streams-and-files/lecture/images/07.12-maserati-edge-detected.png
+![Maserati Edge Detected](https://github.com/fmi/java-course/blob/c5da0c91bb0bff1f1b1cf30041014950cd442cde/07-io-streams-and-files/lecture/images/07.12-maserati-edge-detected.png)
 
 Библиотеката има два основни компонента:
 
