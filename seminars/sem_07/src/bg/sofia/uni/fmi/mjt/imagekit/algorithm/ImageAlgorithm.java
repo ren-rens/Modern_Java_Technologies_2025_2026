@@ -15,4 +15,9 @@ public interface ImageAlgorithm {
      * @throws IllegalArgumentException if the image is null
      */
     BufferedImage process(BufferedImage image);
+
+    static final int RED_OFFSET = 16;
+    static final int BITS = 0xFF;
+    static final int BLUE_OFFSET = 8;
+
 }

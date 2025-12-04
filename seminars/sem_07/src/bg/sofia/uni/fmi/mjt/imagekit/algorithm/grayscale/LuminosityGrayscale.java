@@ -1,6 +1,5 @@
 package bg.sofia.uni.fmi.mjt.imagekit.algorithm.grayscale;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
@@ -30,16 +29,16 @@ public class LuminosityGrayscale implements GrayscaleAlgorithm {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int argb = image.getRGB(x, y);       // ARGB packed int
-                int red   = (argb >> 16) & 0xFF;    // extract red
-                int green = (argb >> 8) & 0xFF;     // extract green
-                int blue  = argb & 0xFF;            // extract blue
+                int red = (argb >> RED_OFFSET) & BITS;    // extract red
+                int green = (argb >> BLUE_OFFSET) & BITS;     // extract green
+                int blue = argb & BITS;            // extract blue
 
                 int gray = (int) Math.round(RED_COEFFICIENT * red
                     + GREEN_COEFFICIENT * green
                     + BLUE_COEFFICIENT * blue);
                 gray = Math.max(MIN_GRAY, Math.min(MAX_GRAY, gray));
 
-                int grayRGB = (gray << 16) | (gray << 8) | gray;
+                int grayRGB = (gray << RED_OFFSET) | (gray << BLUE_OFFSET) | gray;
                 result.setRGB(x, y, grayRGB);
             }
         }

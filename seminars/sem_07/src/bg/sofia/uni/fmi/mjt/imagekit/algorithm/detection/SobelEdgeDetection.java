@@ -39,7 +39,7 @@ public class SobelEdgeDetection implements EdgeDetectionAlgorithm {
                 double changeG = Math.sqrt(changeGx * changeGx + changeGy * changeGy);
                 int pixelValue = Math.min(MAX_PIXEL, (int) Math.round(changeG));
 
-                int rgb = (pixelValue << 16) | (pixelValue << 8) | pixelValue;
+                int rgb = (pixelValue << RED_OFFSET) | (pixelValue << BLUE_OFFSET) | pixelValue;
                 result.setRGB(y, x, rgb);
             }
         }
@@ -66,7 +66,7 @@ public class SobelEdgeDetection implements EdgeDetectionAlgorithm {
         }
 
         int rgb = image.getRGB(y, x); // getRGB(column, row)
-        return (rgb >> 16) & 0xFF; // get red color
+        return (rgb >> RED_OFFSET) & BITS; // get red color
     }
 
     private int findChangeBySobelMatrix(int[][] pixels, int[][] sobelMatrix) {
