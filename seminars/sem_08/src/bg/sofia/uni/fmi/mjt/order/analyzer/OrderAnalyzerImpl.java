@@ -6,7 +6,6 @@ import bg.sofia.uni.fmi.mjt.order.domain.PaymentMethod;
 import bg.sofia.uni.fmi.mjt.order.domain.Status;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +16,6 @@ import java.util.stream.Collectors;
 public class OrderAnalyzerImpl implements OrderAnalyzer {
 
     public OrderAnalyzerImpl(List<Order> orders) {
-        if (orders == null || orders.isEmpty()) {
-            this.orders = new ArrayList<>();
-            return;
-        }
-
         this.orders = orders;
     }
 
@@ -38,7 +32,7 @@ public class OrderAnalyzerImpl implements OrderAnalyzer {
 
     @Override
     public List<Order> ordersByCustomer(String customer) {
-        if (customer == null) {
+        if (customer == null || customer.isBlank()) {
             throw new IllegalArgumentException("No such customer in file exists");
         }
 
@@ -51,13 +45,18 @@ public class OrderAnalyzerImpl implements OrderAnalyzer {
 
     @Override
     public Map.Entry<LocalDate, Long> dateWithMostOrders() {
+        if (orders == null) {
+            return null;
+        }
+
         Map<LocalDate, Long> result = orders
             .stream()
             .filter(Objects::nonNull)
             .collect(Collectors.groupingBy(Order::date, Collectors.counting()));
 
         return result.entrySet().stream()
-            .max(Map.Entry.comparingByValue())
+            .max(Comparator.comparing(Map.Entry<LocalDate, Long>::getValue)
+                .thenComparing(Map.Entry::getKey, Comparator.reverseOrder())) // earliest = smallest date
             .orElse(null);
     }
 
@@ -78,7 +77,8 @@ public class OrderAnalyzerImpl implements OrderAnalyzer {
 
         return result.entrySet()
             .stream()
-            .sorted(Map.Entry.comparingByValue())
+            .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder())
+                .thenComparing(Map.Entry::getKey))
             .map(Map.Entry::getKey)
             .limit(n)
             .toList();
@@ -108,7 +108,7 @@ public class OrderAnalyzerImpl implements OrderAnalyzer {
 
         return Set.copyOf(customers.entrySet()
             .stream()
-            .filter(entry -> entry.getValue() >= SUSPICIOUS_ORDERS_COUNT)
+            .filter(entry -> entry.getValue() > SUSPICIOUS_ORDERS_COUNT)
             .map(Map.Entry::getKey)
             .collect(Collectors.toSet()));
     }
@@ -141,14 +141,13 @@ public class OrderAnalyzerImpl implements OrderAnalyzer {
             grouped.entrySet()
                 .stream()
                 .collect(Collectors.toMap(
-                    Map.Entry::getKey,   // Category
+                    Map.Entry::getKey,
                     entry -> entry.getValue()
                         .entrySet()
                         .stream()
-                        .max(
-                            Comparator
-                                .comparing(Map.Entry<PaymentMethod, Long>::getValue)
-                                .thenComparing(e -> e.getKey().name()) // tie-breaker
+                        .max(Comparator
+                            .comparing(Map.Entry<PaymentMethod, Long>::getValue)
+                            .thenComparing(e -> e.getKey().name(), Comparator.reverseOrder())
                         )
                         .get()
                         .getKey()
@@ -174,8 +173,8 @@ public class OrderAnalyzerImpl implements OrderAnalyzer {
         return locations.entrySet()
             .stream()
             .max(
-                Comparator.comparingLong(Map.Entry<String, Long>::getValue) // count ascending
-                    .thenComparing(Map.Entry::getKey, Comparator.reverseOrder()) // tie: largest key
+                Comparator.comparingLong(Map.Entry<String, Long>::getValue)
+                    .thenComparing(Comparator.comparing(Map.Entry<String, Long>::getKey).reversed())
             )
             .map(Map.Entry::getKey)
             .orElse(null);
