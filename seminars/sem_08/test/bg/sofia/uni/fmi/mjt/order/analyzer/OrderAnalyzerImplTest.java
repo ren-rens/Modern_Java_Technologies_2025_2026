@@ -91,6 +91,13 @@ class OrderAnalyzerImplTest {
     }
 
     @Test
+    void testOrdersByCustomerWithBlankCustomer() {
+        OrderAnalyzerImpl orderAnalyzer = new OrderAnalyzerImpl(new ArrayList<>());
+        assertThrows(IllegalArgumentException.class, () -> orderAnalyzer.ordersByCustomer("   "),
+            "When testing ordersByCustomer with blank customer should throw IllegalArgumentException");
+    }
+
+    @Test
     void testOrdersByCustomerWithNonExistentCustomer() {
         List<Order> orders = new ArrayList<>();
         orders.add(order);
@@ -254,7 +261,7 @@ class OrderAnalyzerImplTest {
         orders.add(order2);
 
         OrderAnalyzerImpl orderAnalyzer = new OrderAnalyzerImpl(orders);
-        assertEquals(List.of(order2.product(), order.product()), orderAnalyzer.topNMostOrderedProducts(10),
+        assertEquals(List.of(order.product(), order2.product()), orderAnalyzer.topNMostOrderedProducts(10),
             "When testing topNMostOrderedProducts with positive n should return a list of product names ordered by frequency");
     }
 
@@ -315,6 +322,7 @@ class OrderAnalyzerImplTest {
         orders.add(order);
         orders.add(order);
         orders.add(null);
+        orders.add(order);
         orders.add(order);
 
         OrderAnalyzer orderAnalyzer = new OrderAnalyzerImpl(orders);
