@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrderLoader {
@@ -22,27 +21,14 @@ public class OrderLoader {
             throw new IllegalArgumentException("Reader is invalid: NULL");
         }
 
-        List<Order> orders = new ArrayList<>();
-
         try (var data = new BufferedReader(reader)) {
-            List<String> lines = data.lines().toList();
-
-            if (lines.isEmpty()) {
-                return orders;
-            }
-
-            // skips the first line if it looks like a header
-            int startIndex = lines.get(0).startsWith("id,") ? 1 : 0;
-
-            orders = lines.stream()
-                .skip(startIndex)
+            return data.lines()
+                .skip(1) // Always skip first line (header)
                 .map(Order::of)
                 .toList();
         } catch (IOException | UncheckedIOException e) {
             throw new RuntimeException("Problem with reading the file occurred", e);
         }
-
-        return orders;
     }
 
 }
