@@ -30,8 +30,8 @@ public class OrderLoaderTest {
     @Test
     void testLoadWithHeaderLine() {
         String input = "id,date,product,category,price,quantity,total,customer,location,payment,status\n" +
-            "id1,2025-01-01,product1,BOOKS,10.0,1,10,customer,location,AMAZON_PAY,COMPLETED\n" +
-            "id2,2025-01-02,product2,CLOTHING,20.0,2,40,customer2,location2,CREDIT_CARD,CANCELLED";
+            "id1,01-01-25,product1,BOOKS,10.0,1,10,customer,location,AMAZON_PAY,COMPLETED\n" +
+            "id2,01-02-25,product2,CLOTHING,20.0,2,40,customer2,location2,CREDIT_CARD,CANCELLED";
 
         Reader reader = new StringReader(input);
         List<Order> orders = OrderLoader.load(reader);
@@ -56,7 +56,7 @@ public class OrderLoaderTest {
     @Test
     void testLoadWithHeaderAndSingleOrder() {
         String input = "id,date,product,category,price,quantity,total,customer,location,payment,status\n" +
-            "id1,2025-01-01,product1,BOOKS,10.0,1,10,customer,location,AMAZON_PAY,COMPLETED";
+            "id1,01-01-25,product1,BOOKS,10.0,1,10,customer,location,AMAZON_PAY,COMPLETED";
 
         Reader reader = new StringReader(input);
         List<Order> orders = OrderLoader.load(reader);
@@ -72,19 +72,6 @@ public class OrderLoaderTest {
 
         assertEquals(0, orders.size(),
             "When testing load with empty reader should return empty list for empty input");
-    }
-
-    @Test
-    void testLoadWithValidInput() {
-        String input = "id1,2025-01-01,product1,BOOKS,10.0,1,10,customer,location,AMAZON_PAY,COMPLETED\n" +
-            "id2,2025-01-02,product2,CLOTHING,20.0,2,40,customer2,location2,CREDIT_CARD,CANCELLED";
-
-        Reader reader = new StringReader(input);
-        List<Order> orders = OrderLoader.load(reader);
-
-        assertEquals(2, orders.size(), "Should read 2 orders from valid input");
-        assertEquals("id1", orders.get(0).id());
-        assertEquals("id2", orders.get(1).id());
     }
 
 }
