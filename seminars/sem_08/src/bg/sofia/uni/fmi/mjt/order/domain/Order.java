@@ -3,6 +3,7 @@ package bg.sofia.uni.fmi.mjt.order.domain;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public record Order(String id, LocalDate date, String product, Category category,
@@ -32,16 +33,17 @@ public record Order(String id, LocalDate date, String product, Category category
         String[] attributes = line.split(",");
 
         String id = attributes[ID_INDEX];
-        LocalDate date = LocalDate.parse(attributes[DATE_INDEX]);
+        LocalDate date = LocalDate.parse(attributes[DATE_INDEX], DateTimeFormatter.ofPattern("dd-MM-yy"));
         String product = attributes[PRODUCT_INDEX];
-        Category category = Category.valueOf(attributes[CATEGORY_INDEX]);
-        double price = Double.valueOf(attributes[PRICE_INDEX]);
-        int quantity = Integer.valueOf(attributes[QUANTITY_INDEX]);
-        double totalSales = Double.valueOf(attributes[TOTAL_SALES_INDEX]);
+        Category category = Category.valueOf(attributes[CATEGORY_INDEX].toUpperCase().replace(" ", "_"));
+        double price = Double.parseDouble(attributes[PRICE_INDEX]);
+        int quantity = Integer.parseInt(attributes[QUANTITY_INDEX]);
+        double totalSales = Double.parseDouble(attributes[TOTAL_SALES_INDEX]);
         String customerName = attributes[CUSTOMER_NAME_INDEX];
         String customerLocation = attributes[CUSTOMER_LOCATION_INDEX];
-        PaymentMethod paymentMethod = PaymentMethod.valueOf(attributes[PAYMENT_METHOD_INDEX]);
-        Status status = Status.valueOf(attributes[STATUS_INDEX]);
+        PaymentMethod paymentMethod = PaymentMethod.valueOf(attributes[PAYMENT_METHOD_INDEX]
+            .toUpperCase().replace(" ", "_"));
+        Status status = Status.valueOf(attributes[STATUS_INDEX].toUpperCase());
 
         return new Order(id, date, product, category, price, quantity, totalSales,
             customerName, customerLocation, paymentMethod, status);
