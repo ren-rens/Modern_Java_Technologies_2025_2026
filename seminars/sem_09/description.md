@@ -149,4 +149,4 @@ src
 
 Успех, Агент 0777!
 
-![Good Dog](./resources/DECODEME.png)
+![Good Dog](https://github.com/fmi/java-course/blob/246d610c6a2894e839ed9e1e2cf0f654ed861fea/09-threads/lab/resources/DECODEME.png)
