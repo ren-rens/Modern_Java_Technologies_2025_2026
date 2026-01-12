@@ -73,6 +73,10 @@ public class ExtractPNGImages implements ImagesOperations, ThreadOperations {
 
                     //get secret image
                     BufferedImage secret = extract(task.embeddedImage());
+                    if (secret == null) {
+                        continue;
+                    }
+
                     saveImage(secret, outputDirectory, task.outputFileName());
                 }
             } catch (InterruptedException e) {
@@ -133,7 +137,7 @@ public class ExtractPNGImages implements ImagesOperations, ThreadOperations {
         int value = 0;
 
         for (int bit = BITS; bit >= 0; bit--) {
-            int pixelNum = BITS - bit;
+            int pixelNum = (BITS - bit) / COLORS_COUNT;
 
             int x = (start + pixelNum) % embeddedImage.getWidth();
             int y = (start + pixelNum) / embeddedImage.getWidth();

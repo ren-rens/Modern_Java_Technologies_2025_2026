@@ -87,10 +87,16 @@ public class EmbedPNGImages implements ImagesOperations, ThreadOperations {
     @SafeVarargs
     @Override
     public final List<Thread> startProducers(List<Path>... files) {
+        List<Thread> producers = new ArrayList<>();
+
         List<Path> coverFiles = files[0];
         List<Path> secretFiles = files[1];
 
-        List<Thread> producers = new ArrayList<>();
+        if (coverFiles == null || coverFiles.isEmpty() ||
+            secretFiles == null || secretFiles.isEmpty()) {
+            return producers;
+        }
+
         int size = coverFiles.size();
 
         for (int i = 0; i < size; i++) {
@@ -150,7 +156,7 @@ public class EmbedPNGImages implements ImagesOperations, ThreadOperations {
     private void processFourPixels(BufferedImage image, int start, int value) {
         for (int bit = BITS; bit >= 0; bit--) {
             int bitValue = (value >> bit) & 1;
-            int pixelNum = BITS - bit;
+            int pixelNum = (BITS - bit) / COLORS_COUNT;
 
             int x = (start + pixelNum) % image.getWidth();
             int y = (start + pixelNum) / image.getWidth();
