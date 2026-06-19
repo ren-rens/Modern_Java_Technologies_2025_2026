@@ -11,4 +11,6 @@
 
 [66. Plus One](https://leetcode.com/problems/plus-one/description/)
 
+[67. Add Binary](https://leetcode.com/problems/add-binary/description/)
+
 [1732. Find the Highest Altitude](https://leetcode.com/problems/find-the-highest-altitude/submissions/2039133820/?envType=daily-question&envId=2026-06-19)
